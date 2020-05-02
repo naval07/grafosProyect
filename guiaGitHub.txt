@@ -1,0 +1,59 @@
+- indicar nombre global (indica quien hizo cada cambio)
+	>> git config --global user.name "John Doe"
+
+- indicar el correo de contacto
+	>> git config --global user.email johndoe@example.com
+
+- iniciar repositorio de manera local
+	>> git init
+	>> git init nombreProyecto (automaticamente se crea la carpeta)
+
+- Enseña los comandos mas usados de git
+	>> git help
+	>> git help <specific command> (git help init)
+
+- Revisar el estatus del repositorio: archivos, cambios sin commit etc
+	>> git status
+
+- añadir bajo seguimiento archivos que añademos o modificamos
+  (pasa los archivos de working directory a staging area)
+	>> git add 
+	>> git add nombreArchivo
+	>> git add * (* indica todo el contenido de la carpeta)
+	>> git add *abc (añade todo lo que termina en abc)
+
+- Marcar cambios en el repositorio
+  (pasa los archivos agregados con el add del staging area al repositorio)
+	>> git commit (se abre editor de texto para hacer el comentario)
+	>> git commit -m "descripcion del cambio"
+	>> git commit -m "titulo del cambio" -m "descipcion del cambio"
+
+- Arreglar un commit
+	>> git commit --amend (elimina el ultimo commit)
+	>> git commit --ammend -m "comentario" (sobreescribe el ultimo commit)
+
+- Subir los archivos al repositorio
+	>> git push
+
+- Bajar la version mas reciente de los archivos del repositorio
+	>> git pull
+
+- Clona un repositorio a una nueva carpeta
+	>> git clone
+
+- Ver los commits creados
+	>> git log
+
+- Ramas (carpetas alternativas)
+	>> git branch (enseña las ramas existentes. *file indica que estamos dentro de file)
+	>> git branch nombreRama (crea rama nueva)
+	>> git checkout nombreRama (moverse entre ramas)
+	>> git checkout nombreRama comentario (crea rama apuntando commit)
+	>> git checkout -b nombreRama (crea rama y se mueve a ella)
+	>> git log --graph (muestra ramas con colores)
+
+Links de ayuda:
+	- https://readwrite.com/2013/09/30/understanding-github-a-journey-for-beginners-part-1/
+	- https://github.com/KamiKeys/guia-git-basica#rebase
+	- https://www.youtube.com/watch?v=HiXLkL42tMU (minutos [6:35 - 9:20] [13:35 - 37:20] [42:20 - 49:40])
+		-Recomiendo ver el video a una velocidad x1.5

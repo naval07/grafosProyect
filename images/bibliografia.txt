@@ -1,0 +1,3 @@
+Cesar: https://www.neoteo.com/el-cifrado-del-cesar/
+
+Vigenere: http://criptografiaymetododeencriptacion.blogspot.com/p/el-cifrado-vigenere-es-un-cifrado.html
