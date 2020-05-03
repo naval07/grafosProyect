@@ -59,7 +59,6 @@ def create_mat():
 # set the password to the message
 def getPass(msg, pas):
     assert(len(pas) <= len(msg)), u"Clave muy larga"
-    #dic = {}
     str = ""
     c_p, c_m = 0, 0
     while c_m < len(msg):
@@ -68,7 +67,6 @@ def getPass(msg, pas):
                 str += " "
                 c_m += 1
             else:
-                #dic[msg[c_m]] = pas[c_p]
                 str += pas[c_p]
                 c_m += 1
                 c_p += 1
@@ -77,24 +75,48 @@ def getPass(msg, pas):
     return str
 
 # cifrate the message with its respective password
-def cifrate(msg, pas):
+def code(msg, pas):
     global dic
     matrix = create_mat()
-    pasw = getPass(msg, pas)
+    pasw = getPass(msg, pas).lower()
+    msg_aux, indexes = lowercase(msg)
     cif = ""
-    for q in range(len(msg)):
-        if msg[q] == " ":
-            cif += " "
+    for q in range(len(msg_aux)):
+        # do not code the simbols
+        if msg_aux[q] not in abc:
+            cif += msg_aux[q]
+        # code the letters
         else:
             row = dic[pasw[q]]
-            column = dic[msg[q]]
+            column = dic[msg_aux[q]]
             cif += matrix[row][column]
-    return cif
+    return set_uppercases(cif, indexes)
+
+# Decode the message mathematically
+def decode(msg, pas):
+    global dic
+    pasw = getPass(msg,pas).lower()
+    msg_aux, indexes = lowercase(msg)
+    deco = ""
+    for q in range(len(msg_aux)):
+        if msg_aux[q] not in abc:
+            deco += msg_aux[q]
+        else:
+            n = dic[msg_aux[q]] # value of the letter q in msg (Ej. msg[q] = a ent. n = 0)
+            m = dic[pasw[q]] # value of the letter q in pas (Ej. pas[q] = z ent. m = 25)
+            letter = (n - m) % 26
+            # get the key of the value letter
+            for key, value in dic.items():
+                if letter == value:
+                    deco += key
+                    break
+    return set_uppercases(deco, indexes)
 
 # main
 if __name__ == "__main__":
+    print("\t¡Texto no mas de 280 caracteres, sin tildes y de clave una sola palabra!\n")
     msg = input("Ingrese el texto a cifrar:\t")
-    msg, indexes_m = lowercase(msg)
     pas = input("Ingrese la clave de cifrado:\t")
-    pas, indexes_p = lowercase(pas)
-    print("Cifrado:\t\t\t", set_uppercases(cifrate(msg,pas), indexes_m))
+    print("Decifrado:\t\t\t", decode(msg,pas))
+    # cif = cifrate(msg,pas)
+    # print("Decifrado: \t\t\t", decode(cif, pas))
