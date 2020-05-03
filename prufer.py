@@ -1,6 +1,7 @@
 import networkx as nx #Librería usada para generar el grafo.
 import matplotlib.pyplot as plt #Librería usada para mostrar el grafo generado.
 import cifradoVigenere as cif
+import cifradoCesar as cc
 
 def word_nodes(word):
     """Crea la lista de nodos con los diferentes caracteres del mensaje."""
@@ -46,50 +47,6 @@ def next_min(nodos, msg):
     nodos.remove(x)
     nodos += aux
     return x
-
-def cifrado_cesar(msg, mov):
-    """Cifrado César modificado: altera el órden de ubicación de caracteres
-    de una cadena ingresada cierto número de movimientos en el abecedario"""
-    new = ""
-    minus = [chr(x) for x in range(97, 123)]
-    mayus = [chr(x) for x in range(65, 91)]
-    corres = {}
-    mv = mov % 26
-    for i in range(0, 26):
-        if i + mov < 26:
-            corres[minus[i]] = minus[i + mv]
-            corres[mayus[i]] = mayus[i + mv]
-        else:
-            corres[minus[i]] = minus[i + mv - 26]
-            corres[mayus[i]] = mayus[i + mv - 26]
-
-    for l in msg:
-        if l in mayus + minus:
-            new += corres[l]
-        else:
-            new += l
-
-    return new
-
-def decifrado_cesar(msg, mov):
-    new = ""
-    minus = [chr(x) for x in range(97, 123)]
-    mayus = [chr(x) for x in range(65, 91)]
-    corres = {}
-    mv = mov % 26
-    for i in range(0, 26):
-        if i - mov < 26:
-            corres[minus[i]] = minus[(i - mv) % 26]
-            corres[mayus[i]] = mayus[(i - mv) % 26]
-        else:
-            corres[minus[i]] = minus[(i - mv - 26) % 26]
-            corres[mayus[i]] = mayus[(i - mv - 26) % 26]
-    for l in msg:
-        if l in mayus + minus:
-            new += corres[l]
-        else:
-            new += l
-    return new
 
 def cambio(nodo_num):
     """si el nodo está marcado con unvalor numérico se cambian estos por
