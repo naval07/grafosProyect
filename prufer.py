@@ -88,3 +88,59 @@ def Reconstruccion_de_T_anagrama(msg):
     G.add_edge(nodos[0], nodos[1])
     nx.draw(G, with_labels = True)
     plt.show()
+
+def R_de_T_Secret(msg):
+    """Algoritmo que toma un mensaje como código de Prüfer y lo transforma 
+    en un árbol T sin indicar que hoja es el mínimo (usando la definición
+    cambio())"""
+    list_num = []
+    for h in range(280):
+        list_num.append(str(h))
+    
+    new_nodos = []
+    nodos = complete_nodes(msg)
+    G = nx.Graph()
+    G.add_nodes_from(nodos)
+    while len(nodos) != 2 and len(msg) > 0:
+        a = msg[0]
+        if min(nodos) not in msg:
+            x = min(nodos)
+            if x in list_num:
+                G.add_edge(cambio(x), a)
+            else: 
+                G.add_edge(x, a)
+            nodos.remove(x)
+        else:
+            x = next_min(nodos, msg)
+            if x in list_num:
+                G.add_edge(cambio(x), a)
+            else:
+                G.add_edge(x, a)
+        new_nodos.append(x)
+        msg = msg[1:]
+        
+    for v in new_nodos:
+        if v in list_num:
+            G.remove_node(v)
+
+    G.add_edge(nodos[0], nodos[1])           
+    nx.draw(G, with_labels = True)
+    #plt.savefig("prueba.PNG")
+    plt.show()
+    
+def codigo_prufer(A):
+    """Toma un árbol y retorna el mensaje en código de Prüfer"""
+    prufer = ""
+    while len(A.nodes()) != 2:
+        hojas = []
+        for x in A.nodes():
+            if A.degree(x) == 1:
+                hojas.append(x)
+        if len(hojas) > 0:
+            s = min(hojas)
+            for v in A.nodes():
+                if (s, v) in A.edges() or (v, s) in A.edges():
+                    prufer += v
+            A.remove_node(s)
+            
+    return prufer
