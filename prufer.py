@@ -54,25 +54,45 @@ def cifrado_cesar(msg, mov):
     minus = [chr(x) for x in range(97, 123)]
     mayus = [chr(x) for x in range(65, 91)]
     corres = {}
-    mb = mov % 26
+    mv = mov % 26
     for i in range(0, 26):
         if i + mov < 26:
-            corres[minus[i]] = minus[i + mb]
-            corres[mayus[i]] = mayus[i + mb]
+            corres[minus[i]] = minus[i + mv]
+            corres[mayus[i]] = mayus[i + mv]
         else:
-            corres[minus[i]] = minus[i + mb - 26]
-            corres[mayus[i]] = mayus[i + mb - 26]
-    
+            corres[minus[i]] = minus[i + mv - 26]
+            corres[mayus[i]] = mayus[i + mv - 26]
+
     for l in msg:
         if l in mayus + minus:
             new += corres[l]
         else:
-            new += l 
-            
+            new += l
+
+    return new
+
+def decifrado_cesar(msg, mov):
+    new = ""
+    minus = [chr(x) for x in range(97, 123)]
+    mayus = [chr(x) for x in range(65, 91)]
+    corres = {}
+    mv = mov % 26
+    for i in range(0, 26):
+        if i - mov < 26:
+            corres[minus[i]] = minus[(i - mv) % 26]
+            corres[mayus[i]] = mayus[(i - mv) % 26]
+        else:
+            corres[minus[i]] = minus[(i - mv - 26) % 26]
+            corres[mayus[i]] = mayus[(i - mv - 26) % 26]
+    for l in msg:
+        if l in mayus + minus:
+            new += corres[l]
+        else:
+            new += l
     return new
 
 def cambio(nodo_num):
-    """si el nodo está marcado con unvalor numérico se cambian estos por 
+    """si el nodo está marcado con unvalor numérico se cambian estos por
     caracteres ajenos al mensaje para generar más privacidad"""
     l = [chr(x) for x in range(256, 537)]
     i = 0
@@ -125,13 +145,13 @@ def Reconstruccion_de_T_anagrama(msg):
     plt.show()
 
 def R_de_T_Secret(msg):
-    """Algoritmo que toma un mensaje como código de Prüfer y lo transforma 
+    """Algoritmo que toma un mensaje como código de Prüfer y lo transforma
     en un árbol T sin indicar que hoja es el mínimo (usando la definición
     cambio())"""
     list_num = []
     for h in range(280):
         list_num.append(str(h))
-    
+
     new_nodos = []
     nodos = complete_nodes(msg)
     G = nx.Graph()
@@ -142,7 +162,7 @@ def R_de_T_Secret(msg):
             x = min(nodos)
             if x in list_num:
                 G.add_edge(cambio(x), a)
-            else: 
+            else:
                 G.add_edge(x, a)
             nodos.remove(x)
         else:
@@ -153,16 +173,16 @@ def R_de_T_Secret(msg):
                 G.add_edge(x, a)
         new_nodos.append(x)
         msg = msg[1:]
-        
+
     for v in new_nodos:
         if v in list_num:
             G.remove_node(v)
 
-    G.add_edge(nodos[0], nodos[1])           
+    G.add_edge(nodos[0], nodos[1])
     nx.draw(G, with_labels = True)
     #plt.savefig("prueba.PNG")
     plt.show()
-    
+
 def codigo_prufer(A):
     """Toma un árbol y retorna el mensaje en código de Prüfer"""
     prufer = ""
@@ -177,5 +197,5 @@ def codigo_prufer(A):
                 if (s, v) in A.edges() or (v, s) in A.edges():
                     prufer += v
             A.remove_node(s)
-            
+
     return prufer
