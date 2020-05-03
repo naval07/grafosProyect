@@ -1,4 +1,4 @@
-def cifrado_cesar(msg, mov):
+def code(msg, mov):
     """Cifrado César modificado: altera el órden de ubicación de caracteres
     de una cadena ingresada cierto número de movimientos en el abecedario"""
     new = ""
@@ -20,7 +20,7 @@ def cifrado_cesar(msg, mov):
             new += l
     return new
 
-def decifrado_cesar(msg, mov):
+def decode(msg, mov):
     """Decifra el mensaje cifrado con el metodo anterior y su respectivo numero de
     movimiento"""
     new = ""
