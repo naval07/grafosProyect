@@ -1,7 +1,24 @@
 import networkx as nx #Librería usada para generar el grafo.
 import matplotlib.pyplot as plt #Librería usada para mostrar el grafo generado.
-import cifradoVigenere as cif
-import cifradoCesar as cc
+#import cifradoVigenere as cif
+#import cifradoCesar as cc
+
+
+"""creación del diccionario que le asigna un caracter a un número"""
+l = [chr(x) for x in range(256, 537)]
+i = 0
+dic = {}
+for q in range(len(l)):
+    dic[str(i)] = l[q]
+    i += 1
+
+"""creación del diccionario que le asigna un número a un caracter ajeno
+al texto"""
+j = 0
+cid = {}
+for q in l:
+    cid[q] = str(j)
+    j += 1
 
 def word_nodes(word):
     """Crea la lista de nodos con los diferentes caracteres del mensaje."""
@@ -16,11 +33,10 @@ def word_nodes(word):
     return L
 
 def complete_nodes(word):
-    """Añade nuevos vértices para completar
+    """Añade nuevos vértices para completar 
     de manera adecuada las iteraciones del algoritmo."""
     len_word = len(word)
     graph_nodes = word_nodes(word)
-    #index = [chr(x) for x in range(200,300)]
     i = 0
     while len(graph_nodes) != len_word + 2:
         graph_nodes.append(str(i))
@@ -28,7 +44,7 @@ def complete_nodes(word):
     return graph_nodes
 
 def complete_nodes_anagrama(word):
-    """Añade nuevos vértices para completar
+    """Añade nuevos vértices para completar 
     de manera adecuada las iteraciones del algoritmo."""
     len_word = len(word)
     graph_nodes = word_nodes(word)
@@ -39,6 +55,8 @@ def complete_nodes_anagrama(word):
     return graph_nodes
 
 def next_min(nodos, msg):
+    """retorna el segundo mínimo del conjunto en caso de que el mínimo pertenezca
+    al mensaje"""
     aux = []
     while min(nodos) in msg:
         aux.append(min(nodos))
@@ -48,19 +66,21 @@ def next_min(nodos, msg):
     nodos += aux
     return x
 
-def cambio(nodo_num):
-    """si el nodo está marcado con unvalor numérico se cambian estos por
+def cambio_n2l(nodo_num):
+    """si el nodo está marcado con un valor numérico se cambian estos por 
     caracteres ajenos al mensaje para generar más privacidad"""
-    l = [chr(x) for x in range(256, 537)]
-    i = 0
-    dic = {}
-    for q in range(len(l)):
-        dic[str(i)] = l[q]
-        i += 1
     return dic[nodo_num]
 
+def cambio_l2n(nodo_let):
+    """si el nodo está marcado con un caracter ajeno a mensaje, se cambia este
+    por uno numérico para generar de manera adecuada la reconstrucción del
+    código de Prüfer"""
+    return cid[nodo_let]
+
+#----------Cifrado de Mensajes a Grafos-----------------
+
 def Reconstruccion_de_T(msg):
-    """Algoritmo que toma un mensaje como código de Prüfer y lo transforma
+    """Algoritmo que toma un mensaje como código de Prüfer y lo transforma 
     en un árbol T"""
     nodos = complete_nodes(msg)
     G = nx.Graph()
@@ -75,13 +95,14 @@ def Reconstruccion_de_T(msg):
             x = next_min(nodos, msg)
             G.add_edge(x, a)
         msg = msg[1:]
-
-    G.add_edge(nodos[0], nodos[1])
+        
+    G.add_edge(nodos[0], nodos[1])        
     nx.draw(G, with_labels = True)
+    #plt.savefig("prueba.PNG")
     plt.show()
 
 def Reconstruccion_de_T_anagrama(msg):
-    """Similar al anterior, pero distribuye los nodos de tal forma que
+    """Similar al anterior, pero distribuye los nodos de tal forma que 
     al escribir el código se retorne en forma de anagrama"""
     nodos = complete_nodes_anagrama(msg)
     G = nx.Graph()
@@ -96,19 +117,19 @@ def Reconstruccion_de_T_anagrama(msg):
             x = next_min(nodos, msg)
             G.add_edge(x, a)
         msg = msg[1:]
-
-    G.add_edge(nodos[0], nodos[1])
+        
+    G.add_edge(nodos[0], nodos[1])        
     nx.draw(G, with_labels = True)
     plt.show()
 
 def R_de_T_Secret(msg):
-    """Algoritmo que toma un mensaje como código de Prüfer y lo transforma
+    """Algoritmo que toma un mensaje como código de Prüfer y lo transforma 
     en un árbol T sin indicar que hoja es el mínimo (usando la definición
     cambio())"""
     list_num = []
     for h in range(280):
         list_num.append(str(h))
-
+    
     new_nodos = []
     nodos = complete_nodes(msg)
     G = nx.Graph()
@@ -118,28 +139,33 @@ def R_de_T_Secret(msg):
         if min(nodos) not in msg:
             x = min(nodos)
             if x in list_num:
-                G.add_edge(cambio(x), a)
-            else:
+                G.add_edge(cambio_n2l(x), a)
+            else: 
                 G.add_edge(x, a)
             nodos.remove(x)
         else:
             x = next_min(nodos, msg)
             if x in list_num:
-                G.add_edge(cambio(x), a)
+                G.add_edge(cambio_n2l(x), a)
             else:
                 G.add_edge(x, a)
         new_nodos.append(x)
         msg = msg[1:]
-
+        
     for v in new_nodos:
         if v in list_num:
             G.remove_node(v)
 
     G.add_edge(nodos[0], nodos[1])
+    
+    print(G.nodes())
+    print(G.edges())           
     nx.draw(G, with_labels = True)
     #plt.savefig("prueba.PNG")
     plt.show()
-
+    
+#---------Descifrado de Grafos a mensajes--------------
+    
 def codigo_prufer(A):
     """Toma un árbol y retorna el mensaje en código de Prüfer"""
     prufer = ""
@@ -154,5 +180,13 @@ def codigo_prufer(A):
                 if (s, v) in A.edges() or (v, s) in A.edges():
                     prufer += v
             A.remove_node(s)
-
+            
     return prufer
+
+def codigo_prufer_Secret(A):
+    """Toma un árbol sin nodos numéricos y lo transforma a código de Prüfer"""
+    for v in A.nodes():
+        if v in l:
+            x = cambio_l2n(v)
+            v.replace(v, x)
+    codigo_prufer(A)
