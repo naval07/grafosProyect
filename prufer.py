@@ -79,7 +79,7 @@ def letter2number(nodo_let):
 
 #----------Cifrado de Mensajes a Grafos-----------------
 
-def Reconstruccion_de_T(msg):
+def crypt(msg):
     """Algoritmo que toma un mensaje como código de Prüfer y una constraseña de cifrado
     para crear una codificacion del mensaje, un árbol T"""
 
@@ -109,9 +109,10 @@ def Reconstruccion_de_T(msg):
     #plt.savefig("prueba.PNG")
     plt.show()
 
-def Reconstruccion_de_T_anagrama(msg):
+def cryptAnagram(msg):
     """Similar al anterior, pero distribuye los nodos de tal forma que
-    al escribir el código se retorne en forma de anagrama"""
+    al escribir el código se retorne en forma de anagrama.(No cuenta con
+    desencriptacion)"""
 
     assert(len(msg) <= 280), u"Mensaje muy largo. Máximo 280 caracteres"
     # cifra la contraseña mediante el cif. de Cesar con su long.
@@ -138,7 +139,7 @@ def Reconstruccion_de_T_anagrama(msg):
     nx.draw(G, with_labels = True)
     plt.show()
 
-def R_de_T_Secret(msg):
+def cryptSecret(msg):
     """Algoritmo que toma un mensaje como código de Prüfer y lo transforma
     en un árbol T sin indicar que hoja es el mínimo (usando la definición
     cambio())"""
@@ -187,7 +188,7 @@ def R_de_T_Secret(msg):
 
 #---------Descifrado de Grafos a mensajes--------------
 
-def codigo_prufer(A):
+def decrypt(A):
     """Toma un árbol y retorna el mensaje en código de Prüfer"""
     prufer = ""
     while len(A.nodes()) != 2:
@@ -204,7 +205,7 @@ def codigo_prufer(A):
 
     return prufer
 
-def codigo_prufer_Secret(A):
+def decryptSecret(A):
     """Toma un árbol sin nodos numéricos y lo transforma a código de Prüfer"""
     for v in A.nodes():
         if v in l:
@@ -214,4 +215,4 @@ def codigo_prufer_Secret(A):
                 if (u, v) in A.edges() or (v, u) in A.edges():
                     A.add_edge(u, x)
             A.remove_node(v)
-    return codigo_prufer(A)
+    return decrypt(A)
