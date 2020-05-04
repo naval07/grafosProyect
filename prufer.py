@@ -1,7 +1,7 @@
 import networkx as nx #Librería usada para generar el grafo.
 import matplotlib.pyplot as plt #Librería usada para mostrar el grafo generado.
-import cifradoVigenere as cv
-import cifradoCesar as cc
+import cifradoVigenere as cv #Modulo del cifrado de Vigenere
+import cifradoCesar as cc #Modulo del cifrado de César
 
 
 """creación del diccionario que le asigna un caracter a un número"""
@@ -209,9 +209,9 @@ def codigo_prufer_Secret(A):
     for v in A.nodes():
         if v in l:
             x = letter2number(v)
-            v.replace(v, x)
-    codigo_prufer(A)
-
-if __name__ == "__main__":
-    msg = input("ingrese el mensaje: ")
-    R_de_T_Secret(msg)
+            A.add_node(x)
+            for u in A.nodes():
+                if (u, v) in A.edges() or (v, u) in A.edges():
+                    A.add_edge(u, x)
+            A.remove_node(v)
+    return codigo_prufer(A)
