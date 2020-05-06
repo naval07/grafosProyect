@@ -58,7 +58,8 @@ def create_mat():
 
 # set the password to the message
 def getPass(msg, pas):
-    assert(len(pas) <= len(msg)), u"Clave muy larga"
+    while len(pas) > len(msg):
+        pas = input("\t Error! Longitud de la contraseña muy larga. Por favor, ingrese una nueva: ")
     str = ""
     c_p, c_m = 0, 0
     while c_m < len(msg):
