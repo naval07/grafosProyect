@@ -81,13 +81,12 @@ def letter2number(nodo_let):
     return cid[nodo_let]
 
 def guardarGrafo(G, title):
-    plt.savefig(title+".PNG")
-    nodos = open(title+"N.txt", "w")
+    nodos = open("graphs/"+title+"N.txt", "w")
     for x in G.nodes:
         nodos.write(x + "*")
     nodos.write("stop")
     nodos.close()
-    aristas = open(title+"E.txt", "w")
+    aristas = open("graphs/"+title+"E.txt", "w")
     for x in G.edges:
         aristas.write(x[0] + "*" + x[1] + os.linesep)
     aristas.close()
@@ -128,6 +127,7 @@ def crypt(msg):
     title = input("\t Ingrese el título del mensaje: ")
 
     # Guarda el grafo
+    plt.savefig("images/"+title+".PNG")
     guardarGrafo(G, title)
 
     print("\n\t Preparando grafo...")
@@ -167,6 +167,7 @@ def cryptAnagram(msg):
 
     title = input("\t Ingrese el título del mensaje: ")
     # guarda el grafo
+    plt.savefig("images/"+title+".PNG")
     guardarGrafo(G, title)
 
     print("\nPreparando grafo...")
@@ -222,6 +223,7 @@ def cryptSecret(msg):
     title = input("\t Ingrese el título del mensaje: ")
 
     # guarda el grafo
+    plt.savefig("images/"+title+".PNG")
     guardarGrafo(G, title)
 
     print("\nPreparando grafo...")
@@ -235,7 +237,7 @@ def decrypt(title):
     """Toma un árbol y retorna el mensaje en código de Prüfer"""
     A = nx.Graph()
     # añade nodos
-    nodos = open(title + "N.txt", "r")
+    nodos = open("graphs/"+title+"N.txt", "r")
     line = nodos.read()
     while line[:4] != "stop":
         sep = line.find("*")
@@ -243,7 +245,7 @@ def decrypt(title):
         line = line[sep+1:]
     nodos.close()
     #añade aristas
-    aristas = open(title + "E.txt" , "r")
+    aristas = open("graphs/"+title+"E.txt", "r")
     for li in aristas.readlines():
         sep = li.find("*")
         u = li[:sep]
@@ -274,13 +276,15 @@ def decrypt(title):
     pas = cc.code(pas, len(pas))
     prufer = cv.decode(prufer, pas)
 
+    print("\n\t El mensaje es:\n\t")
+
     return prufer
 
 def decryptSecret(title): #title
     """Toma un árbol sin nodos numéricos y lo transforma a código de Prüfer"""
     A = nx.Graph()
     # añade nodos
-    nodos = open(title + "N.txt", "r")
+    nodos = open("graphs/"+title+"N.txt", "r")
     line = nodos.read()
     while line[:4] != "stop":
         sep = line.find("*")
@@ -288,7 +292,7 @@ def decryptSecret(title): #title
         line = line[sep+1:]
     nodos.close()
     #añade aristas
-    aristas = open(title + "E.txt" , "r")
+    aristas = open("graphs/"+title+"E.txt", "r")
     for li in aristas.readlines():
         sep = li.find("*")
         u = li[:sep]
@@ -299,7 +303,6 @@ def decryptSecret(title): #title
     for w in aux_nodes:
         if w in l:
             x = letter2number(w)
-            print("\t" + str(x))
             A.add_node(x)
             for u in A.nodes():
                 if (u, w) in A.edges() or (w, u) in A.edges():
