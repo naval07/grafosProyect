@@ -2,6 +2,7 @@ import networkx as nx #Librería usada para generar el grafo.
 import matplotlib.pyplot as plt #Librería usada para mostrar el grafo generado.
 import cifradoVigenere as cv #Modulo del cifrado de Vigenere
 import cifradoCesar as cc #Modulo del cifrado de César
+import os #Módulo para escribir y leer archivos txt
 
 
 """creación del diccionario que le asigna un caracter a un número"""
@@ -85,8 +86,10 @@ def crypt(msg):
 
     assert(len(msg) <= 280), u"Mensaje muy largo. Máximo 280 caracteres"
     # cifra la contraseña mediante el cif. de Cesar con su long.
-    pas = input("Ingrese la contraseña: ")
-    assert(len(pas) >0), u"No ingresó contraseña"
+    pas = input("\t Ingrese la contraseña: ")
+    while len(pas) == 0:
+        pas = input("\t Error! No ingresó contraseña. Por favor,\n\t Ingrese una contraseña nueva: ")
+    #assert(len(pas) >0), u"No ingresó contraseña"
     pasCes = cc.code(pas, len(pas))
     # cifrra el mensaje mediante el cif. de Vigenere
     msgVige = cv.code(msg, pasCes)
@@ -105,9 +108,24 @@ def crypt(msg):
         msgVige = msgVige[1:]
 
     G.add_edge(nodos[0], nodos[1])
-    nx.draw(G, with_labels = True)
-    #plt.savefig("prueba.PNG")
+    nx.draw(G, with_labels = True, node_size = 350)
     plt.show()
+    #plt.savefig(title+".PNG")
+
+    title = input("\t Ingrese el título del mensaje: ")
+    #crea el grafo en .txt
+    nodos = open(title+"N.txt", "w")
+    for x in G.nodes:
+        nodos.write(x + "*")
+    nodos.write("stop")
+    nodos.close()
+    aristas = open(title+"E.txt", "w")
+    for x in G.edges:
+        aristas.write(x[0] + "," + x[1] + os.linesep)
+    aristas.close()
+    print("\nPreparando grafo...")
+
+    return G
 
 def cryptAnagram(msg):
     """Similar al anterior, pero distribuye los nodos de tal forma que
@@ -116,8 +134,10 @@ def cryptAnagram(msg):
 
     assert(len(msg) <= 280), u"Mensaje muy largo. Máximo 280 caracteres"
     # cifra la contraseña mediante el cif. de Cesar con su long.
-    pas = input("Ingrese la contraseña: ")
-    assert(len(pas) >0), u"No ingresó contraseña"
+    pas = input("\t Ingrese la contraseña: ")
+    while len(pas) == 0:
+        pas = input("\t Error! No ingresó contraseña. Por favor,\n\t Ingrese una contraseña nueva: ")
+    #assert(len(pas) >0), u"No ingresó contraseña"
     pasCes = cc.code(pas, len(pas))
     # cifrra el mensaje mediante el cif. de Vigenere
     msgVige = cv.code(msg, pasCes)
@@ -136,8 +156,11 @@ def cryptAnagram(msg):
         msgVige = msgVige[1:]
 
     G.add_edge(nodos[0], nodos[1])
-    nx.draw(G, with_labels = True)
-    plt.show()
+    nx.draw(G, with_labels = True, node_size = 350)
+    title = input("\t Ingrese el título del mensaje: ")
+    print("\nPreparando grafo...")
+    plt.savefig(title+".PNG")
+    #plt.show()
 
 def cryptSecret(msg):
     """Algoritmo que toma un mensaje como código de Prüfer y lo transforma
@@ -146,8 +169,10 @@ def cryptSecret(msg):
 
     assert(len(msg) <= 280), u"Mensaje muy largo. Máximo 280 caracteres"
     # cifra la contraseña mediante el cif. de Cesar con su long.
-    pas = input("Ingrese la contraseña: ")
-    assert(len(pas) >0), u"No ingresó contraseña"
+    pas = input("\t Ingrese la contraseña: ")
+    while len(pas) == 0:
+        pas = input("\t Error! No ingresó contraseña. Por favor,\n\t Ingrese una contraseña nueva: ")
+    # assert(len(pas) >0), u"No ingresó contraseña"
     pasCes = cc.code(pas, len(pas))
     # cifrra el mensaje mediante el cif. de Vigenere
     msgVige = cv.code(msg, pasCes)
@@ -183,13 +208,37 @@ def cryptSecret(msg):
 
     G.add_edge(nodos[0], nodos[1])
 
-    nx.draw(G, with_labels = True, node_size = 350)
-    plt.show()
+    nx.draw(G, with_labels = True, node_size = 300)
+    title = input("\t Ingrese el título del mensaje: ")
+    print("\nPreparando grafo...")
+    plt.savefig(title+".PNG")
+    #plt.show()
 
 #---------Descifrado de Grafos a mensajes--------------
 
-def decrypt(A):
+def decrypt(title):
     """Toma un árbol y retorna el mensaje en código de Prüfer"""
+    A = nx.Graph()
+    #añade nodos
+    nodos = open(title + "N.txt", "r")
+    line = nodos.read()
+    while line[:4] != "stop":
+        sep = line.find("*")
+        A.add_node(line[:sep])
+        line = line[sep+1:]
+    nodos.close()
+    #añade aristas
+    aristas = open(title + "E.txt" , "r")
+    for l in aristas.readlines():
+        sep = l.find(",")
+        u = l[:sep]
+        v = l[sep+1:-1]
+        A.add_edge(u,v)
+    aristas.close()
+
+    nx.draw(A, with_labels = True, node_size = 350)
+    plt.show()
+
     prufer = ""
     while len(A.nodes()) != 2:
         hojas = []
@@ -202,6 +251,13 @@ def decrypt(A):
                 if (s, v) in A.edges() or (v, s) in A.edges():
                     prufer += v
             A.remove_node(s)
+
+    pas = input("\t Ingrese la contraseña: ")
+    while len(pas) == 0:
+        pas = input("\t Error! No ingresó contraseña. Por favor,\n\t Ingrese una contraseña nueva: ")
+
+    pas = cc.decode(pas, len(pas))
+    prufer = cv.decode(prufer, pas)
 
     return prufer
 
@@ -216,3 +272,8 @@ def decryptSecret(A):
                     A.add_edge(u, x)
             A.remove_node(v)
     return decrypt(A)
+
+a = crypt("Emanuel")
+#a = crypt("jdsklfjklsdfjkldsfsfjklds jfkldsjfl cvmxnv ,m.xc kldjflueiowru eiou o jfdlksjf slj lvnfjskldñjf,xcnmv jklejflieuriowure fnd slka jfldsj fls fuieowpruioe  fjkldsjflsñjaf jslfjsdlfjldsnflkdjflk dnl jflkdjsfoieuwrhfjkdslhf jdkfhcbvnmxbvmnx fudiouroepquiropuoethkjhghkj nvcnkjdfhsdfhj")
+b = decrypt("test")
+print(b)
