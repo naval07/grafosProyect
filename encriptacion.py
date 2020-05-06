@@ -40,6 +40,6 @@ elif dif == "2":
     pf.cryptSecret(msg)
 
 else:
-    pr.cryptAnagram(msg)
+    pf.cryptAnagram(msg)
 
 print("¡Listo!")

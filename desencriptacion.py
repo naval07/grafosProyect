@@ -21,10 +21,10 @@ title = input("\t Ingrese el título del mensaje: ")
 dif = input("\t Ingrese la dificultad de encriptado: ")
 
 if dif == "1":
-    pf.decrypt(msg)
+    print(pf.decrypt(title))
 
 elif dif == "2":
-    pf.decryptSecret(msg)
+    print("\t " + pf.decryptSecret(title))
 
 else:
-    print("Lo sentimos, esto es un problema de grado factorial.")
+    print("Lo sentimos, esto es un problema de magnitud factorial.")
