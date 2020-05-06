@@ -21,6 +21,8 @@ for q in l:
     cid[q] = str(j)
     j += 1
 
+#---------- Funciones de ayuda -----------------
+
 def word_nodes(word):
     """Crea la lista de nodos con los diferentes caracteres del mensaje."""
     L = []
@@ -78,6 +80,18 @@ def letter2number(nodo_let):
     código de Prüfer"""
     return cid[nodo_let]
 
+def guardarGrafo(G, title):
+    plt.savefig(title+".PNG")
+    nodos = open(title+"N.txt", "w")
+    for x in G.nodes:
+        nodos.write(x + "*")
+    nodos.write("stop")
+    nodos.close()
+    aristas = open(title+"E.txt", "w")
+    for x in G.edges:
+        aristas.write(x[0] + "*" + x[1] + os.linesep)
+    aristas.close()
+
 #----------Cifrado de Mensajes a Grafos-----------------
 
 def crypt(msg):
@@ -91,7 +105,7 @@ def crypt(msg):
         pas = input("\t Error! No ingresó contraseña. Por favor,\n\t Ingrese una contraseña nueva: ")
     #assert(len(pas) >0), u"No ingresó contraseña"
     pasCes = cc.code(pas, len(pas))
-    # cifrra el mensaje mediante el cif. de Vigenere
+    # cifra el mensaje mediante el cif. de Vigenere
     msgVige = cv.code(msg, pasCes)
     nodos = complete_nodes(msgVige)
     G = nx.Graph()
@@ -109,21 +123,14 @@ def crypt(msg):
 
     G.add_edge(nodos[0], nodos[1])
     nx.draw(G, with_labels = True, node_size = 350)
-    plt.show()
-    #plt.savefig(title+".PNG")
+    #plt.show()
 
     title = input("\t Ingrese el título del mensaje: ")
-    #crea el grafo en .txt
-    nodos = open(title+"N.txt", "w")
-    for x in G.nodes:
-        nodos.write(x + "*")
-    nodos.write("stop")
-    nodos.close()
-    aristas = open(title+"E.txt", "w")
-    for x in G.edges:
-        aristas.write(x[0] + "," + x[1] + os.linesep)
-    aristas.close()
-    print("\nPreparando grafo...")
+
+    # Guarda el grafo
+    guardarGrafo(G, title)
+
+    print("\n\t Preparando grafo...")
 
     return G
 
@@ -157,9 +164,12 @@ def cryptAnagram(msg):
 
     G.add_edge(nodos[0], nodos[1])
     nx.draw(G, with_labels = True, node_size = 350)
+
     title = input("\t Ingrese el título del mensaje: ")
+    # guarda el grafo
+    guardarGrafo(G, title)
+
     print("\nPreparando grafo...")
-    plt.savefig(title+".PNG")
     #plt.show()
 
 def cryptSecret(msg):
@@ -210,16 +220,21 @@ def cryptSecret(msg):
 
     nx.draw(G, with_labels = True, node_size = 300)
     title = input("\t Ingrese el título del mensaje: ")
+
+    # guarda el grafo
+    guardarGrafo(G, title)
+
     print("\nPreparando grafo...")
-    plt.savefig(title+".PNG")
     #plt.show()
+
+    # return G
 
 #---------Descifrado de Grafos a mensajes--------------
 
 def decrypt(title):
     """Toma un árbol y retorna el mensaje en código de Prüfer"""
     A = nx.Graph()
-    #añade nodos
+    # añade nodos
     nodos = open(title + "N.txt", "r")
     line = nodos.read()
     while line[:4] != "stop":
@@ -229,15 +244,15 @@ def decrypt(title):
     nodos.close()
     #añade aristas
     aristas = open(title + "E.txt" , "r")
-    for l in aristas.readlines():
-        sep = l.find(",")
-        u = l[:sep]
-        v = l[sep+1:-1]
+    for li in aristas.readlines():
+        sep = li.find("*")
+        u = li[:sep]
+        v = li[sep+1:-1]
         A.add_edge(u,v)
     aristas.close()
 
     nx.draw(A, with_labels = True, node_size = 350)
-    plt.show()
+    #plt.show()
 
     prufer = ""
     while len(A.nodes()) != 2:
@@ -256,24 +271,41 @@ def decrypt(title):
     while len(pas) == 0:
         pas = input("\t Error! No ingresó contraseña. Por favor,\n\t Ingrese una contraseña nueva: ")
 
-    pas = cc.decode(pas, len(pas))
+    pas = cc.code(pas, len(pas))
     prufer = cv.decode(prufer, pas)
 
     return prufer
 
-def decryptSecret(A):
+def decryptSecret(title): #title
     """Toma un árbol sin nodos numéricos y lo transforma a código de Prüfer"""
-    for v in A.nodes():
-        if v in l:
-            x = letter2number(v)
+    A = nx.Graph()
+    # añade nodos
+    nodos = open(title + "N.txt", "r")
+    line = nodos.read()
+    while line[:4] != "stop":
+        sep = line.find("*")
+        A.add_node(line[:sep])
+        line = line[sep+1:]
+    nodos.close()
+    #añade aristas
+    aristas = open(title + "E.txt" , "r")
+    for li in aristas.readlines():
+        sep = li.find("*")
+        u = li[:sep]
+        v = li[sep+1:-1]
+        A.add_edge(u,v)
+    aristas.close()
+    aux_nodes = [x for x in A.nodes]
+    for w in aux_nodes:
+        if w in l:
+            x = letter2number(w)
+            print("\t" + str(x))
             A.add_node(x)
             for u in A.nodes():
-                if (u, v) in A.edges() or (v, u) in A.edges():
+                if (u, w) in A.edges() or (w, u) in A.edges():
                     A.add_edge(u, x)
-            A.remove_node(v)
-    return decrypt(A)
+            A.remove_node(w)
 
-a = crypt("Emanuel")
-#a = crypt("jdsklfjklsdfjkldsfsfjklds jfkldsjfl cvmxnv ,m.xc kldjflueiowru eiou o jfdlksjf slj lvnfjskldñjf,xcnmv jklejflieuriowure fnd slka jfldsj fls fuieowpruioe  fjkldsjflsñjaf jslfjsdlfjldsnflkdjflk dnl jflkdjsfoieuwrhfjkdslhf jdkfhcbvnmxbvmnx fudiouroepquiropuoethkjhghkj nvcnkjdfhsdfhj")
-b = decrypt("test")
-print(b)
+    guardarGrafo(A, title)
+
+    return decrypt(title)
